@@ -7,6 +7,8 @@ page 50100 UsersList
     PageType = List;
     SourceTable = Users;
     UsageCategory = Lists;
+    // Linking List to UsersList to card
+    CardPageId = UsersCard;
 
     layout
     {

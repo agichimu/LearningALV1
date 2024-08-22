@@ -8,8 +8,8 @@ table 50100 Users
         field(1; "MemberID"; Integer)
         {
             Caption = 'MemberID';
-            AutoIncrement = true;  
-            DataClassification = SystemMetadata; 
+            AutoIncrement = true;
+            DataClassification = SystemMetadata;
         }
         field(2; firstName; Text[50])
         {
@@ -46,27 +46,32 @@ table 50100 Users
             Caption = 'Status';
             OptionCaption = 'New,Dormant,Active,Deseased';
             OptionMembers = New,Dormant,Active,Deseased;
+            Editable = false;
             DataClassification = ToBeClassified;
         }
 
         field(9; CreatedAt; DateTime)
         {
             Caption = 'Time Created';
+            Editable = false;
             DataClassification = SystemMetadata;
         }
         field(10; CreatedBy; Text[50])
         {
             Caption = 'Created By';
+            Editable = false;
             DataClassification = SystemMetadata;
         }
         field(11; ModifiedAt; DateTime)
         {
             Caption = 'Time Modified';
+            Editable = false;
             DataClassification = SystemMetadata;
         }
         field(12; ModifiedBy; Text[50])
         {
             Caption = 'Modified By';
+            Editable = false;
             DataClassification = SystemMetadata;
         }
     }
