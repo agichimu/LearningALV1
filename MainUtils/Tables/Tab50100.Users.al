@@ -8,7 +8,7 @@ table 50100 Users
         field(1; "MemberID"; Integer)
         {
             Caption = 'MemberID';
-            AutoIncrement = true;  //auto-increment
+            AutoIncrement = true;  
             DataClassification = SystemMetadata; 
         }
         field(2; firstName; Text[50])
@@ -44,9 +44,30 @@ table 50100 Users
         field(8; Status; Option)
         {
             Caption = 'Status';
-            OptionCaption = 'New,Dormant,dormant,Active,Deseased';
+            OptionCaption = 'New,Dormant,Active,Deseased';
             OptionMembers = New,Dormant,Active,Deseased;
             DataClassification = ToBeClassified;
+        }
+
+        field(9; CreatedAt; DateTime)
+        {
+            Caption = 'Time Created';
+            DataClassification = SystemMetadata;
+        }
+        field(10; CreatedBy; Text[50])
+        {
+            Caption = 'Created By';
+            DataClassification = SystemMetadata;
+        }
+        field(11; ModifiedAt; DateTime)
+        {
+            Caption = 'Time Modified';
+            DataClassification = SystemMetadata;
+        }
+        field(12; ModifiedBy; Text[50])
+        {
+            Caption = 'Modified By';
+            DataClassification = SystemMetadata;
         }
     }
 
@@ -57,4 +78,16 @@ table 50100 Users
             Clustered = true;
         }
     }
+
+    trigger OnInsert()
+    begin
+        CreatedAt := CurrentDateTime();
+        CreatedBy := UserId();
+    end;
+
+    trigger OnModify()
+    begin
+        ModifiedAt := CurrentDateTime();
+        ModifiedBy := UserId();
+    end;
 }

@@ -1,10 +1,12 @@
 namespace ALProject.ALProject;
 
-page 50100 UsersList
+page 50101 UsersCard
 {
     ApplicationArea = All;
-    Caption = 'UsersList';
-    PageType = List;
+    Caption = 'UsersCard';
+    PageType = Card;
+    Permissions =
+        tabledata Users = RIMD;
     SourceTable = Users;
     UsageCategory = Lists;
 
@@ -12,11 +14,14 @@ page 50100 UsersList
     {
         area(Content)
         {
-            repeater(General)
+            group(General)
             {
+                Caption = 'General';
+
                 field("MemberID"; Rec."MemberID")
                 {
                     ToolTip = 'Specifies the value of the MemberID field.', Comment = '%';
+                    Editable = false;
                 }
                 field(firstName; Rec.firstName)
                 {
@@ -45,6 +50,27 @@ page 50100 UsersList
                 field(Status; Rec.Status)
                 {
                     ToolTip = 'Specifies the value of the Status field.', Comment = '%';
+                    Editable = false;
+                }
+                field(CreatedAt; Rec.CreatedAt)
+                {
+                    ToolTip = 'Specifies the value of the CreatedAt field.', Comment = '%';
+                    Editable = false;
+                }
+                field(CreatedBy; Rec.CreatedBy)
+                {
+                    ToolTip = 'Specifies the value of the CreatedBy field.', Comment = '%';
+                    Editable = false;
+                }
+                field(ModifiedAt; Rec.ModifiedAt)
+                {
+                    ToolTip = 'specifies the value of theModifiedAt', Comment = '%';
+                    Editable = false;
+                }
+                field(ModifiedBy; Rec.ModifiedBy)
+                {
+                    ToolTip = 'spcifies the value of ModifiedBy', Comment = '%';
+                    Editable = false;
                 }
             }
         }
