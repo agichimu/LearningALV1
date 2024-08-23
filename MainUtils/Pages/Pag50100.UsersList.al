@@ -41,6 +41,10 @@ page 50100 UsersList
                 {
                     ToolTip = 'Specifies the value of the EmailID field.', Comment = '%';
                 }
+                 field(Gender; Rec.Gender)
+                {
+                    ToolTip = 'Specifies the value of the Gender field.', Comment = '%';
+                }
                 field(DOB; Rec.DOB)
                 {
                     ToolTip = 'Specifies the value of the DOB field.', Comment = '%';
@@ -48,28 +52,23 @@ page 50100 UsersList
                 field(Status; Rec.Status)
                 {
                     ToolTip = 'Specifies the value of the Status field.', Comment = '%';
-                    Editable = false;
 
                 }
                 field(CreatedAt; Rec.CreatedAt)
                 {
                     ToolTip = 'Specifies the value of the CreatedAt field.', Comment = '%';
-                    Editable = false;
                 }
                 field(CreatedBy; Rec.CreatedBy)
                 {
                     ToolTip = 'Specifies the value of the CreatedBy field.', Comment = '%';
-                    Editable = false;
                 }
                 field(ModifiedAt; Rec.ModifiedAt)
                 {
                     ToolTip = 'specifies the value of theModifiedAt', Comment = '%';
-                    Editable = false;
                 }
                 field(ModifiedBy; Rec.ModifiedBy)
                 {
                     ToolTip = 'spcifies the value of ModifiedBy', Comment = '%';
-                    Editable = false;
                 }
             }
         }

@@ -26,10 +26,13 @@ page 50101 UsersCard
                 field(firstName; Rec.firstName)
                 {
                     ToolTip = 'Specifies the value of the firstName field.', Comment = '%';
+                    ShowMandatory = true;
+
                 }
                 field(SecondName; Rec.SecondName)
                 {
                     ToolTip = 'Specifies the value of the SecondName field.', Comment = '%';
+                    ShowMandatory = true;
                 }
                 field(Surname; Rec.Surname)
                 {
@@ -38,39 +41,46 @@ page 50101 UsersCard
                 field(Phone_No; Rec.Phone_No)
                 {
                     ToolTip = 'Specifies the value of the Phone_No field.', Comment = '%';
+                    ShowMandatory = true;
+                    trigger OnValidate()
+                    begin
+                        Rec.TestField("Phone_No");
+                    end;
                 }
                 field(EmailID; Rec.EmailID)
                 {
                     ToolTip = 'Specifies the value of the EmailID field.', Comment = '%';
+                    ShowMandatory = true;
+                }
+                field(Gender; Rec.Gender)
+                {
+                    ToolTip = 'Specifies the value of the Gender field.', Comment = '%';
+                    ShowMandatory = true;
                 }
                 field(DOB; Rec.DOB)
                 {
                     ToolTip = 'Specifies the value of the DOB field.', Comment = '%';
+                    ShowMandatory = true;
                 }
                 field(Status; Rec.Status)
                 {
                     ToolTip = 'Specifies the value of the Status field.', Comment = '%';
-                    Editable = false;
                 }
                 field(CreatedAt; Rec.CreatedAt)
                 {
                     ToolTip = 'Specifies the value of the CreatedAt field.', Comment = '%';
-                    Editable = false;
                 }
                 field(CreatedBy; Rec.CreatedBy)
                 {
                     ToolTip = 'Specifies the value of the CreatedBy field.', Comment = '%';
-                    Editable = false;
                 }
                 field(ModifiedAt; Rec.ModifiedAt)
                 {
                     ToolTip = 'specifies the value of theModifiedAt', Comment = '%';
-                    Editable = false;
                 }
                 field(ModifiedBy; Rec.ModifiedBy)
                 {
                     ToolTip = 'spcifies the value of ModifiedBy', Comment = '%';
-                    Editable = false;
                 }
             }
         }
