@@ -13,7 +13,7 @@ codeunit 50102 "Userscodeunit"
     begin
         tot := num1 + num2;
         //Message('The sum of the two numbers is %3', num1, num2, tot);
-        exit(tot); // Return the total value
+        exit(tot);
     end;
 
     var
