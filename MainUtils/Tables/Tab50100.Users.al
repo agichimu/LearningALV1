@@ -42,7 +42,7 @@ table 50100 Users
             Caption = 'Surname';
             DataClassification = ToBeClassified;
         }
-        field(5; "Phone_No"; Code[13])
+        field(5; "Phone_No"; Code[20])
         {
             Caption = 'Phone No';
             DataClassification = ToBeClassified;
