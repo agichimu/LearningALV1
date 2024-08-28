@@ -3,7 +3,6 @@ page 50102 "AddPage"
     ApplicationArea = All;
     PageType = Card;
     UsageCategory = Administration;
-    PromotedActionCategories = 'New,Process,Report,Functions,Job,Addition,Substraction,Division';
     layout
     {
         area(content)
@@ -60,9 +59,6 @@ page 50102 "AddPage"
                 {
                     ApplicationArea = Basic;
                     Caption = 'Addition';
-                    Promoted = true;
-                    PromotedCategory = Category6;
-                    PromotedIsBig = true;
                     image = Add;
 
                     trigger OnAction()
@@ -78,9 +74,6 @@ page 50102 "AddPage"
                 {
                     ApplicationArea = Basic;
                     Caption = 'Substraction';
-                    Promoted = true;
-                    PromotedCategory = Category7;
-                    PromotedIsBig = true;
                     image = ReleaseShipment;
                     trigger OnAction()
                     begin
@@ -95,10 +88,7 @@ page 50102 "AddPage"
                 {
                     ApplicationArea = Basic;
                     Caption = 'Division';
-                    Promoted = true;
-                    PromotedCategory = Category8;
                     Image = RemoveLine;
-                    PromotedIsBig = true;
                     trigger OnAction()
                     begin
                         divisiontotal := Mycode.divide(num1, num2);
@@ -106,6 +96,45 @@ page 50102 "AddPage"
                 }
             }
 
+        }
+        area(Promoted)
+        {
+            group(Category_Report)
+            {
+                Caption = 'Report', Comment = 'Generated from the PromotedActionCategories property index 2.';
+            }
+            group(Category_Category4)
+            {
+                Caption = 'Functions', Comment = 'Generated from the PromotedActionCategories property index 3.';
+            }
+            group(Category_Category5)
+            {
+                Caption = 'Job', Comment = 'Generated from the PromotedActionCategories property index 4.';
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Addition', Comment = 'Generated from the PromotedActionCategories property index 5.';
+
+                actionref(Addition_Promoted; Addition)
+                {
+                }
+            }
+            group(Category_Category7)
+            {
+                Caption = 'Substraction', Comment = 'Generated from the PromotedActionCategories property index 6.';
+
+                actionref(Substraction_Promoted; Substraction)
+                {
+                }
+            }
+            group(Category_Category8)
+            {
+                Caption = 'Division', Comment = 'Generated from the PromotedActionCategories property index 7.';
+
+                actionref(Division_Promoted; Division)
+                {
+                }
+            }
         }
     }
 

@@ -36,17 +36,56 @@ table 50100 Users
         {
             Caption = 'Second Name';
             DataClassification = ToBeClassified;
+
+            trigger OnValidate()
+
+            var
+                InvalidCharacters: Text;
+            begin
+                InvalidCharacters := '1234567890!@#$%^&*()_~{}[];:"|\ ,./<>?-= ';
+
+                if ContainsInvalidCharacters(secondName, InvalidCharacters) then
+                    Error('Second Name contains invalid characters.');
+
+                if StrLen(secondName) < 2 then
+                    Error('Second Name must be at least 2 characters long.');
+
+                firstName := UPPERCASE(secondName);
+            end;
         }
         field(4; surname; Text[50])
         {
             Caption = 'Surname';
             DataClassification = ToBeClassified;
+
+            trigger OnValidate()
+
+            var
+                InvalidCharacters: Text;
+            begin
+                InvalidCharacters := '1234567890!@#$%^&*()_~{}[];:"|\ ,./<>?-= ';
+
+                if ContainsInvalidCharacters(surname, InvalidCharacters) then
+                    Error('Second Name contains invalid characters.');
+
+                if StrLen(surname) < 2 then
+                    Error('Second Name must be at least 2 characters long.');
+
+                firstName := UPPERCASE(surname);
+            end;
         }
         field(5; "Phone_No"; Code[20])
         {
             Caption = 'Phone No';
             DataClassification = ToBeClassified;
+
+            trigger OnValidate()
+            begin
+                if Phonenumberisduplicate("Phone_No") then
+                    Error('Error Phone Number already exists');
+            end;
         }
+
         field(6; emailID; Text[50])
         {
             Caption = 'Email ID';
@@ -160,4 +199,13 @@ table 50100 Users
         end;
         exit(false);
     end;
+
+    procedure Phonenumberisduplicate(InputText: Text): Boolean
+    var
+        Rec: Record Users;
+    begin
+        Rec.SetRange("Phone_No", InputText);
+        exit(Rec.FindFirst());
+    end;
+
 }

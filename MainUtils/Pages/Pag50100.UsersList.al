@@ -10,6 +10,7 @@ page 50100 UsersList
     // Linking List to UsersList to card
     CardPageId = UsersCard;
 
+
     layout
     {
         area(Content)
@@ -41,7 +42,7 @@ page 50100 UsersList
                 {
                     ToolTip = 'Specifies the value of the EmailID field.', Comment = '%';
                 }
-                 field(Gender; Rec.Gender)
+                field(Gender; Rec.Gender)
                 {
                     ToolTip = 'Specifies the value of the Gender field.', Comment = '%';
                 }
@@ -73,4 +74,49 @@ page 50100 UsersList
             }
         }
     }
+    actions
+    {
+        area(navigation)
+        {
+
+            group(importUsers)
+            {
+                action("Import Users")
+                {
+                    Caption = 'Import Users';
+                    ApplicationArea = Basic;
+                    Image = Import;
+                    trigger OnAction()
+
+                    begin
+                        Xmlport.Run(50103, false, true);
+                    end;
+                }
+            }
+        }
+        area(Promoted)
+        {
+            group(Category_Report)
+            {
+                Caption = 'Report', Comment = 'Generated from the PromotedActionCategories property index 2.';
+            }
+            group(Category_Category4)
+            {
+                Caption = 'Functions', Comment = 'Generated from the PromotedActionCategories property index 3.';
+            }
+            group(Category_Category5)
+            {
+                Caption = 'Job', Comment = 'Generated from the PromotedActionCategories property index 4.';
+            }
+            group(Category_Category6)
+            {
+                Caption = 'Import Users', Comment = 'Generated from the PromotedActionCategories property index 5.';
+
+                actionref("Import Users_Promoted"; "Import Users")
+                {
+                }
+            }
+        }
+    }
 }
+
