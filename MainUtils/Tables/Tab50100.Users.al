@@ -23,13 +23,13 @@ table 50100 Users
             begin
                 InvalidCharacters := '1234567890!@#$%^&*()_~{}[];:"|\ ,./<>?-= ';
 
-                if ContainsInvalidCharacters(firstName, InvalidCharacters) then
+                if ContainsInvalidCharacters(Rec.firstName, InvalidCharacters) then
                     Error('First Name contains invalid characters.');
 
-                if StrLen(firstName) < 2 then
+                if StrLen(Rec.firstName) < 2 then
                     Error('First Name must be at least 2 characters long.');
 
-                firstName := UPPERCASE(firstName);
+                rec.firstName := UPPERCASE(firstName);
             end;
         }
         field(3; secondName; Text[50])
@@ -50,7 +50,7 @@ table 50100 Users
                 if StrLen(secondName) < 2 then
                     Error('Second Name must be at least 2 characters long.');
 
-                firstName := UPPERCASE(secondName);
+                secondName := UPPERCASE(secondName);
             end;
         }
         field(4; surname; Text[50])
@@ -66,12 +66,12 @@ table 50100 Users
                 InvalidCharacters := '1234567890!@#$%^&*()_~{}[];:"|\ ,./<>?-= ';
 
                 if ContainsInvalidCharacters(surname, InvalidCharacters) then
-                    Error('Second Name contains invalid characters.');
+                    Error('Surname Name contains invalid characters.');
 
                 if StrLen(surname) < 2 then
-                    Error('Second Name must be at least 2 characters long.');
+                    Error('Surname Name must be at least 2 characters long.');
 
-                firstName := UPPERCASE(surname);
+                surname := UPPERCASE(surname);
             end;
         }
         field(5; "Phone_No"; Code[20])
@@ -200,12 +200,14 @@ table 50100 Users
         exit(false);
     end;
 
-    procedure Phonenumberisduplicate(InputText: Text): Boolean
+    procedure Phonenumberisduplicate(PhoneNumber: Text[20]): Boolean
     var
-        Rec: Record Users;
+        UsersRec: Record Users;
     begin
-        Rec.SetRange("Phone_No", InputText);
-        exit(Rec.FindFirst());
+        UsersRec.SetRange("Phone_No", PhoneNumber);
+        if UsersRec.FindFirst() then
+            exit(true)
+        else
+            exit(false);
     end;
-
 }

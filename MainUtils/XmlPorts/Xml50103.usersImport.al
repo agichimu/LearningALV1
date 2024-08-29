@@ -14,6 +14,9 @@ xmlport 50103 usersImport
             tableelement(users; users)
             {
                 XmlName = 'Item';
+                // fieldelement(MemberID; users.MemberID)
+                // {
+                // }
                 fieldelement(firstName; users.firstName)
                 {
                 }
@@ -38,6 +41,18 @@ xmlport 50103 usersImport
                 fieldelement(status; users.status)
                 {
                 }
+                // fieldelement(createdAt; users.createdAt)
+                // {
+                // }
+                // fieldelement(createdBy; users.createdBy)
+                // {
+                // }
+                // fieldelement(modifiedAt; users.modifiedAt)
+                // {
+                // }
+                // fieldelement(modifiedBy; users.modifiedBy)
+                // {
+                // }
 
             }
         }

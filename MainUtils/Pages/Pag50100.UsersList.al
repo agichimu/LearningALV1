@@ -7,6 +7,8 @@ page 50100 UsersList
     PageType = List;
     SourceTable = Users;
     UsageCategory = Lists;
+    InsertAllowed = true;
+    SaveValues = true;
     // Linking List to UsersList to card
     CardPageId = UsersCard;
 
@@ -78,7 +80,6 @@ page 50100 UsersList
     {
         area(navigation)
         {
-
             group(importUsers)
             {
                 action("Import Users")

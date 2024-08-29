@@ -18,7 +18,7 @@ page 50101 UsersCard
             {
                 Caption = 'General';
 
-                field("MemberID"; Rec."MemberID")
+                field("MemberID"; Rec.MemberID)
                 {
                     ToolTip = 'Specifies the value of the MemberID field.', Comment = '%';
                     Editable = false;
