@@ -14,7 +14,8 @@ table 50100 Users
         field(2; firstName; Text[50])
         {
             Caption = 'First Name';
-            DataClassification = ToBeClassified;
+            DataClassification = CustomerContent;
+            NotBlank = true;
 
             trigger OnValidate()
 
@@ -36,6 +37,7 @@ table 50100 Users
         {
             Caption = 'Second Name';
             DataClassification = ToBeClassified;
+            NotBlank = true;
 
             trigger OnValidate()
 

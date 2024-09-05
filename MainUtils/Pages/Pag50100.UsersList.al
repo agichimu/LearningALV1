@@ -1,5 +1,7 @@
 namespace ALProject.ALProject;
 
+using LearningAl.LearningAl;
+
 page 50100 UsersList
 {
     ApplicationArea = All;
@@ -94,6 +96,44 @@ page 50100 UsersList
                     end;
                 }
             }
+            group(exportToExcel)
+            {
+                action("Export to Excel")
+                {
+                    Caption = 'Open In Excel';
+                    ApplicationArea = All;
+                    Image = Export;
+                    trigger OnAction()
+                    var
+                        ExportTestCodeunit: Codeunit 50105;
+                        IsHandled: Boolean;
+                        ErrorText: Text;
+                    begin
+                        IsHandled := ExportTestCodeunit.ExportUsersToExcel(ErrorText);
+                        if IsHandled then
+                            Message('Export completed successfully!')
+                        else
+                            Message('Export failed: %1', ErrorText);
+                    end;
+                }
+
+            }
+            group(sowreport)
+            {
+                action(ShowReport)
+                {
+                    ApplicationArea = All;
+                    Caption = 'Show User Report';
+                    Image = Report;
+                    trigger OnAction()
+                    var
+                        Report: Report "iconmembers report";
+                    begin
+                        Report.RunModal();
+                    end;
+                }
+
+            }
         }
         area(Promoted)
         {
@@ -117,7 +157,25 @@ page 50100 UsersList
                 {
                 }
             }
+            // group(Category_Category7)
+            // {
+            //     Caption = 'Export To Excel', Comment = 'Generated from the PromotedActionCategories property index6.';
+
+            //     actionref("export to excel_Promoted"; "Export To Excel")
+            //     {
+            //     }
+            // }
+
+            group(Category_Category7)
+            {
+                Caption = 'Show User Report', Comment = 'Generated from the PromotedActionCategories property index7.';
+
+                actionref("Show User Report"; "ShowReport")
+                {
+                }
+            }
         }
     }
+
 }
 

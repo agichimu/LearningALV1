@@ -14,9 +14,6 @@ xmlport 50103 usersImport
             tableelement(users; users)
             {
                 XmlName = 'Item';
-                // fieldelement(MemberID; users.MemberID)
-                // {
-                // }
                 fieldelement(firstName; users.firstName)
                 {
                 }
@@ -41,18 +38,6 @@ xmlport 50103 usersImport
                 fieldelement(status; users.status)
                 {
                 }
-                // fieldelement(createdAt; users.createdAt)
-                // {
-                // }
-                // fieldelement(createdBy; users.createdBy)
-                // {
-                // }
-                // fieldelement(modifiedAt; users.modifiedAt)
-                // {
-                // }
-                // fieldelement(modifiedBy; users.modifiedBy)
-                // {
-                // }
 
             }
         }
@@ -63,10 +48,32 @@ xmlport 50103 usersImport
         {
             area(Content)
             {
-                group(GroupName)
+                group(ExportGroup)
                 {
+                    Caption = 'Export Users';
+                    field(ExportFileName; FileName)
+                    {
+                        ApplicationArea = All;
+                        ToolTip = 'Specify the file name for the export.';
+                    }
+                }
+            }
+        }
+        actions
+        {
+            area(Processing)
+            {
+                action(ExportAction)
+                {
+                    Caption = 'Export';
+                    ToolTip = 'Click to export users.';
+                    trigger OnAction()
+                    begin
+                        Xmlport.Run(50104, true, true);
+                    end;
                 }
             }
         }
     }
+
 }
