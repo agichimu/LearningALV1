@@ -1,3 +1,4 @@
+// TODO : Check for not working
 codeunit 50105 "Export Users to Excel"
 {
     procedure ExportUsersToExcel(var ErrorText: Text): Boolean;
@@ -31,7 +32,7 @@ codeunit 50105 "Export Users to Excel"
         TempBlob.CreateOutStream(OutStream);
 
         // Write the Excel data to the sheet
-        ExcelBuffer.WriteSheet('Users List', COMPANYNAME, USERID); // Assuming COMPANYNAME and USERID are accessible variables
+        ExcelBuffer.WriteSheet('Users List', COMPANYNAME, USERID);
 
         // Prepare the InStream for download
         TempBlob.CreateInStream(InStream);

@@ -157,16 +157,16 @@ page 50100 UsersList
                 {
                 }
             }
-            // group(Category_Category7)
-            // {
-            //     Caption = 'Export To Excel', Comment = 'Generated from the PromotedActionCategories property index6.';
-
-            //     actionref("export to excel_Promoted"; "Export To Excel")
-            //     {
-            //     }
-            // }
-
             group(Category_Category7)
+            {
+                Caption = 'Export To Excel', Comment = 'Generated from the PromotedActionCategories property index6.';
+
+                actionref("export to excel_Promoted"; "Export To Excel")
+                {
+                }
+            }
+
+            group(Category_Category8)
             {
                 Caption = 'Show User Report', Comment = 'Generated from the PromotedActionCategories property index7.';
 
