@@ -10,7 +10,7 @@ codeunit 50101 Calculator
     procedure SumV2(Request: Text): Text
     var
         JSONParser: JsonObject;
-        varA: JsonToken; 
+        varA: JsonToken;
         varB: JsonToken;
         Result: Integer;
 
