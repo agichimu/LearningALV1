@@ -105,7 +105,7 @@ codeunit 50104 "SOAP REST Service"
         SampleAccount: JsonObject;
         ResponseData: JsonArray;
         Response: Text;
-        StateOptions: Option Enabled,Disabled;
+        StateOptions: Option Enabled,Disabled,Others;
 
     begin
         Users.Reset;
@@ -115,7 +115,7 @@ codeunit 50104 "SOAP REST Service"
 
         // Check if 'state' exists
         if JSONParser.Get('state', StateFilter) then begin
-            // Convert value to lowercase for comparison
+            // Convert to lowercase for comparison
             Result := LOWERCASE(StateFilter.AsValue().AsText());
         end else begin
             Result := 'enabled';
@@ -161,6 +161,153 @@ codeunit 50104 "SOAP REST Service"
         // Return JSON text/string
         exit(Response);
     end;
+
+    procedure InsertUser(Request: Text): Text
+    var
+        RequestParser: JsonObject;   //parse the incoming JSON data.
+        Users: Record Users;
+        varA: JsonToken;
+
+        ResponseObject: JsonObject;  //construct the response as a JSON object.
+        Response: Text;
+
+        FirstName: Text[50];
+        SecondName: Text[50];
+        Surname: Text[50];
+        PhoneNo: Code[20];
+        EmailID: Text[50];
+        Gender: Text;
+        DOB: Date;
+    begin
+        RequestParser.ReadFrom(Request);
+
+        //checks if first name exist in the request if true value is stored in var first name
+
+        RequestParser.ReadFrom(Request);
+
+        if not RequestParser.Get('first_name', varA) then begin
+            // Add status and data to the response JSON object
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('status_description', 'First Name is missing');
+
+            // Convert JSON response object to text
+            ResponseObject.WriteTo(Response);
+
+            // Return JSON text/string
+            exit(Response);
+        end;
+        FirstName := varA.AsValue().AsText();
+
+        if not RequestParser.Get('second_name', varA) then begin
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('status_description', 'Second Name is Missing');
+
+            ResponseObject.WriteTo(Response);
+
+            exit(Response);
+
+        end;
+        SecondName := varA.AsValue().AsText();
+
+
+        if not RequestParser.Get('surname', varA) then begin
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('status_description', 'surname is Missing');
+
+            ResponseObject.WriteTo(Response);
+
+            exit(Response);
+
+        end;
+        Surname := varA.AsValue().AsText();
+
+
+        if not RequestParser.Get('phone_no', varA) then begin
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('status_description', 'Phone Number is missing');
+
+            ResponseObject.WriteTo(Response);
+
+            exit(Response);
+
+        end;
+        PhoneNo := varA.AsValue().AsText();
+
+
+        if not RequestParser.Get('email_id', varA) then begin
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('status_description', 'Email Address');
+
+            ResponseObject.WriteTo(Response);
+
+            exit(Response);
+
+        end;
+        EmailID := varA.AsValue().AsText();
+
+
+        if not RequestParser.Get('gender', varA) then begin
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('status_description', 'Gender is missing');
+
+            ResponseObject.WriteTo(Response);
+
+            exit(Response);
+        end;
+        Gender := LOWERCASE(varA.AsValue().AsText());
+
+
+        if not RequestParser.Get('date_of_birth', varA) then begin
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('status_description', 'Date of Birth is missing');
+            ResponseObject.WriteTo(Response);
+            exit(Response);
+        end;
+        DOB := varA.AsValue().AsDate();
+
+        Users.Init();   // initializes
+
+        Users.firstName := FirstName;
+        Users.Validate(firstName);
+
+        Users.secondName := SecondName;
+        Users.Validate(secondName);
+
+        Users.surname := Surname;
+        Users.Validate(surname);
+
+        Users."Phone_No" := PhoneNo;
+        Users.Validate(Phone_No);
+
+        Users.emailID := EmailID;
+        users.Validate(emailID);
+
+        case Gender of
+            'male':
+                Users.gender := Users.gender::Male;
+            'female':
+                Users.gender := Users.gender::Female;
+            else begin
+                ResponseObject.Add('status', 'ERROR');
+                ResponseObject.Add('status_description', 'Invalid gender specified');
+                ResponseObject.WriteTo(Response);
+                exit(Response);
+            end;
+        end;
+
+        Users."DOB" := DOB;
+
+        Users.Insert(true);
+
+        ResponseObject.Add('status', 'SUCCESS');
+        ResponseObject.Add('status_description', 'User has been inserted successfully');
+        ResponseObject.WriteTo(Response);
+
+
+
+        exit(Response);
+    end;
+
 
 
     // GLOBAL
