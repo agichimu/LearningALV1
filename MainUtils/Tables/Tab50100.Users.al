@@ -49,7 +49,7 @@ table 50100 Users
                 if ContainsInvalidCharacters(secondName, InvalidCharacters) then
                     Error('Second Name contains invalid characters.');
 
-                if StrLen(secondName) < 2 then
+                if StrLen(Rec.secondName) < 2 then
                     Error('Second Name must be at least 2 characters long.');
 
                 secondName := UPPERCASE(secondName);
