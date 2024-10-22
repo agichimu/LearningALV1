@@ -492,11 +492,12 @@ codeunit 50104 "SOAP REST Service"
         Users.SetRange("MemberID", member_id);
 
         if Users.FindFirst() then begin
-            // Fetch new values from the request and validate only if they are provided
+
             if RequestParser.Get('first_name', varA) then begin
                 first_name := varA.AsValue().AsText();
+
                 Users."firstName" := first_name;
-                Users.Validate("firstName"); // Validate only if updated
+                Users.Validate("firstName");
             end;
 
             if RequestParser.Get('second_name', varA) then begin
@@ -547,6 +548,57 @@ codeunit 50104 "SOAP REST Service"
         exit(Response);
     end;
 
+    // Delete  
+    procedure DeleteUser(Request: Text): Text
+    var
+        RequestParser: JsonObject;
+
+        Users: Record Users;
+
+        member_id_filter: JsonToken;
+
+        ResponseObject: JsonObject;
+        Response: Text;
+        member_id: Integer;
+
+    begin
+        Users.Reset;
+
+        RequestParser.ReadFrom(Request);  // Parse the JSON request
+
+        // Get member_id from the request and store it in member_id_filter
+        if not RequestParser.Get('member_id', member_id_filter) then begin
+            ResponseObject.Add('status', 'Error');
+            ResponseObject.Add('status_description', 'member id is missing in the request');
+
+            ResponseObject.WriteTo(Response);
+            exit(Response);
+        end;
+
+        // Convert to Integer
+        member_id := member_id_filter.AsValue().AsInteger();
+
+        // Set the filter using member_id
+        Users.SetRange("MemberID", member_id);
+
+        // Check if the user exists
+        if Users.FindFirst() then begin
+
+            Users.Delete(true);  //Deletes a record in a table.
+
+            ResponseObject.Add('status', 'SUCCESS');
+            ResponseObject.Add('status_description', STRSUBSTNO('User with member id %1 has been deleted successfully', member_id));
+        end else begin
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('status_description', STRSUBSTNO('User with member id %1 does not exist', member_id));
+        end;
+
+        // Convert the JSON response object to text
+        ResponseObject.WriteTo(Response);
+
+        // Return the JSON text response
+        exit(Response);
+    end;
 
 
 
