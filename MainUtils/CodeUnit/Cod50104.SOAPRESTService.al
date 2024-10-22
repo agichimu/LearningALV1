@@ -324,30 +324,50 @@ codeunit 50104 "SOAP REST Service"
 
     procedure GetUsers(Request: Text): Text
     var
-        RequestParser: JsonToken;
 
+        JSONParser: JsonObject;
         Users: Record Users;
-
-        Payload: JsonToken;
-        IdentifierType: JsonToken;
-        Identifier: JsonToken;
 
         ResponseObject: JsonObject;
         SampleAccount: JsonObject;
         ResponseData: JsonArray;
         Response: Text;
 
+        Page_filter: JsonToken;
+        Page_size_filter: JsonToken;
+        page: Integer;
+        page_size: Integer;
+        offset: Integer;
+        recordCount: Integer;
     begin
-        // Fetch all Users and add them to JSON response
+        // Parse the JSON request
+        JSONParser.ReadFrom(Request);
+        if not JSONParser.Get('page', Page_filter) then    //checks if the field page exist in request
+
+            page := 1  // default if not found in request
+        else
+            page := Page_filter.AsValue().AsInteger();
+
+        if not JSONParser.Get('page_size', Page_size_filter) then
+            page_size := 10
+        else
+            page_size := Page_size_filter.AsValue().AsInteger();
+
+        offset := (page - 1) * page_size;
+
         Users.Reset;
 
-        // Check if there are Users in the table
-        if Users.FindSet then begin
-            //REPEAT UNTIL loop will loop through all filtered records.
-            repeat begin
+        //Counts the number of records in a table
+        if Users.Count > 0 then begin
+            recordCount := 0;
+            while (recordCount < offset) and (Users.Next() <> 0) do
+                recordCount += 1;
+
+            // Fetch records for the current page
+            recordCount := 0; // Reset the recordCount for pageSize tracking
+            repeat
                 Clear(SampleAccount);
 
-                // Add member_id field to the Users Object
                 SampleAccount.Add('member_id', Users."MemberID");
                 SampleAccount.Add('first_name', Users."firstName");
                 SampleAccount.Add('second_name', Users."secondName");
@@ -361,24 +381,27 @@ codeunit 50104 "SOAP REST Service"
                 SampleAccount.Add('modified_at', Users."modifiedAt");
                 SampleAccount.Add('modified_by', Users."modifiedBy");
 
-                // add users object to the response array
                 ResponseData.Add(SampleAccount);
 
+                recordCount += 1;
 
-            end until Users.Next = 0;
+            until (Users.Next() = 0) or (recordCount >= page_size);
         end;
 
-        // Add success status to the response
+
         ResponseObject.Add('status', 'SUCCESS');
         ResponseObject.Add('status_description', 'Users list has been fetched successfully');
         ResponseObject.Add('data', ResponseData);
+        ResponseObject.Add('page', page);
+        ResponseObject.Add('page_size', page_size);
 
-        // 5. Convert JSON response object to text
+        // Convert the JSON response object to text
         ResponseObject.WriteTo(Response);
 
-        // 6. Return JSON text/string
-        exit(Response)
+        // Return the JSON text response
+        exit(Response);
     end;
+
 
     procedure GetSpecificUser(Request: Text): Text
     var
