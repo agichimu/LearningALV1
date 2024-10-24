@@ -196,8 +196,6 @@ codeunit 50104 "SOAP REST Service"
 
         //checks if first name exist in the request if true value is stored in var first name
 
-        RequestParser.ReadFrom(Request);
-
         if not RequestParser.Get('first_name', varA) then begin
             // Add status and data to the response JSON object
             ResponseObject.Add('status', 'ERROR');
@@ -322,83 +320,163 @@ codeunit 50104 "SOAP REST Service"
 
     end;
 
-    procedure GetUsers(Request: Text): Text
-    var
+    // procedure GetUsers(Request: Text): Text
+    // var
 
-        JSONParser: JsonObject;
+    //     JSONParser: JsonObject;
+    //     Users: Record Users;
+
+    //     ResponseObject: JsonObject;
+    //     SampleAccount: JsonObject;
+    //     ResponseData: JsonArray;
+    //     Response: Text;
+
+    //     Page_filter: JsonToken;
+    //     Page_size_filter: JsonToken;
+    //     page: Integer;
+    //     page_size: Integer;
+    //     offset: Integer;
+    //     recordCount: Integer;
+    // begin
+    //     // Parse the JSON request
+    //     JSONParser.ReadFrom(Request);
+
+    //     if not JSONParser.Get('page', Page_filter) then    //checks if the field page exist in request
+
+    //         page := 1  // default if not found in request
+    //     else
+    //         page := Page_filter.AsValue().AsInteger();
+
+    //     if not JSONParser.Get('page_size', Page_size_filter) then
+    //         page_size := 10
+    //     else
+    //         page_size := Page_size_filter.AsValue().AsInteger();
+
+    //     offset := (page - 1) * page_size;
+
+    //     Users.Reset;
+
+    //     //Users.FindSet();
+
+    //     //Counts the number of records in a table
+    //     if Users.Count > 0 then begin
+    //         recordCount := 0;  // starts recordCount at zero.
+
+    //         while (recordCount < offset) and (Users.Next() <> 0) do
+    //             recordCount += 1;
+
+    //         // Fetch records for the current page
+    //         recordCount := 0;
+
+    //         repeat
+    //             Clear(SampleAccount);
+
+    //             SampleAccount.Add('member_id', Users."MemberID");
+    //             SampleAccount.Add('first_name', Users."firstName");
+    //             SampleAccount.Add('second_name', Users."secondName");
+    //             SampleAccount.Add('surname', Users."surname");
+    //             SampleAccount.Add('phone_no', Users."Phone_No");
+    //             SampleAccount.Add('email_id', Users."emailID");
+    //             SampleAccount.Add('date_of_birth', Users."DOB");
+    //             SampleAccount.Add('status', Format(Users.status));
+    //             SampleAccount.Add('created_at', Users."createdAt");
+    //             SampleAccount.Add('created_by', Users."createdBy");
+    //             SampleAccount.Add('modified_at', Users."modifiedAt");
+    //             SampleAccount.Add('modified_by', Users."modifiedBy");
+
+    //             ResponseData.Add(SampleAccount);
+
+    //             recordCount += 1;
+
+    //         until (Users.Next() = 0) or (recordCount >= page_size);
+    //     end;
+
+
+    //     ResponseObject.Add('status', 'SUCCESS');
+    //     ResponseObject.Add('status_description', 'Users list has been fetched successfully');
+    //     ResponseObject.Add('data', ResponseData);
+    //     ResponseObject.Add('page', page);
+    //     ResponseObject.Add('page_size', page_size);
+
+    //     // Convert the JSON response object to text
+    //     ResponseObject.WriteTo(Response);
+
+    //     // Return the JSON text response
+    //     exit(Response);
+    // end;
+
+    procedure GetUsers(Payload: JsonObject): Text
+
+    var
+        page: JsonToken;
+        page_size: JsonToken;
+
+        Offset: Integer;
+        Counter: Integer;
+
         Users: Record Users;
 
         ResponseObject: JsonObject;
-        SampleAccount: JsonObject;
-        ResponseData: JsonArray;
+        Data: JsonArray;
+        Datum: JsonObject;
         Response: Text;
-
-        Page_filter: JsonToken;
-        Page_size_filter: JsonToken;
-        page: Integer;
-        page_size: Integer;
-        offset: Integer;
-        recordCount: Integer;
     begin
-        // Parse the JSON request
-        JSONParser.ReadFrom(Request);
-        if not JSONParser.Get('page', Page_filter) then    //checks if the field page exist in request
+        // Process payload here...
+        if not Payload.SelectToken('page', page) then begin
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('description', 'Page number value is missing in the request');
+            // ResponseObject.Add('data', Data);
+            // AddDateTimeToResponse(ResponseObject);
+            ResponseObject.WriteTo(Response);
 
-            page := 1  // default if not found in request
-        else
-            page := Page_filter.AsValue().AsInteger();
-
-        if not JSONParser.Get('page_size', Page_size_filter) then
-            page_size := 10
-        else
-            page_size := Page_size_filter.AsValue().AsInteger();
-
-        offset := (page - 1) * page_size;
-
-        Users.Reset;
-
-        //Counts the number of records in a table
-        if Users.Count > 0 then begin
-            recordCount := 0;
-            while (recordCount < offset) and (Users.Next() <> 0) do
-                recordCount += 1;
-
-            // Fetch records for the current page
-            recordCount := 0; // Reset the recordCount for pageSize tracking
-            repeat
-                Clear(SampleAccount);
-
-                SampleAccount.Add('member_id', Users."MemberID");
-                SampleAccount.Add('first_name', Users."firstName");
-                SampleAccount.Add('second_name', Users."secondName");
-                SampleAccount.Add('surname', Users."surname");
-                SampleAccount.Add('phone_no', Users."Phone_No");
-                SampleAccount.Add('email_id', Users."emailID");
-                SampleAccount.Add('date_of_birth', Users."DOB");
-                SampleAccount.Add('status', Users."status");
-                SampleAccount.Add('created_at', Users."createdAt");
-                SampleAccount.Add('created_by', Users."createdBy");
-                SampleAccount.Add('modified_at', Users."modifiedAt");
-                SampleAccount.Add('modified_by', Users."modifiedBy");
-
-                ResponseData.Add(SampleAccount);
-
-                recordCount += 1;
-
-            until (Users.Next() = 0) or (recordCount >= page_size);
+            exit(Response);
         end;
 
+        if not Payload.SelectToken('page_size', page_size) then begin
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('description', 'Page size value is missing in the request');
+            // ResponseObject.Add('data', Data);
+            // AddDateTimeToResponse(ResponseObject);
 
+            ResponseObject.WriteTo(Response);
+
+            exit(Response);
+        end;
+
+        // Pagination
+        Users.Reset;
+        if Users.FindSet then begin
+            Offset := (page.AsValue.AsInteger - 1) * page_size.AsValue.AsInteger();
+            Users.Next(Offset);
+            Counter := 0;
+
+            repeat begin
+                Clear(Datum);
+
+                Datum.Add('member_id', Users."MemberID");
+                Datum.Add('first_name', Users."firstName");
+                Datum.Add('second_name', Users."secondName");
+                Datum.Add('surname', Users."surname");
+                Datum.Add('phone_no', Users."Phone_No");
+                Datum.Add('email_id', Users."emailID");
+                Datum.Add('date_of_birth', Users."DOB");
+                Datum.Add('status', Format(Users.status));
+                Datum.Add('created_at', Users."createdAt");
+                Datum.Add('created_by', Users."createdBy");
+                Datum.Add('modified_at', Users."modifiedAt");
+                Datum.Add('modified_by', Users."modifiedBy");
+
+                Data.Add(Datum);
+                Counter += 1;
+            end until (Users.Next = 0) or (Counter = page_size.AsValue.AsInteger);
+        end;
         ResponseObject.Add('status', 'SUCCESS');
-        ResponseObject.Add('status_description', 'Users list has been fetched successfully');
-        ResponseObject.Add('data', ResponseData);
-        ResponseObject.Add('page', page);
-        ResponseObject.Add('page_size', page_size);
+        ResponseObject.Add('description', 'Request is successful');
+        ResponseObject.Add('data', Data);
+        // AddDateTimeToResponse(ResponseObject);
 
-        // Convert the JSON response object to text
         ResponseObject.WriteTo(Response);
 
-        // Return the JSON text response
         exit(Response);
     end;
 
@@ -406,14 +484,11 @@ codeunit 50104 "SOAP REST Service"
     procedure GetSpecificUser(Request: Text): Text
     var
         // Parse the incoming request
-        RequestParser: JsonToken;
-        Users: Record Users;
-        Payload: JsonToken;
-        IdentifierType: JsonToken;
-        Identifier: JsonToken;
         JSONParser: JsonObject;
+        Users: Record Users;
+
         member_id_filter: JsonToken;
-        Resut: Text;
+
         ResponseObject: JsonObject;
         SampleAccount: JsonObject;
         ResponseData: JsonArray;
@@ -592,7 +667,7 @@ codeunit 50104 "SOAP REST Service"
         // Get member_id from the request and store it in member_id_filter
         if not RequestParser.Get('member_id', member_id_filter) then begin
             ResponseObject.Add('status', 'Error');
-            ResponseObject.Add('status_description', 'member id is missing in the request');
+            ResponseObject.Add('status_description', 'member id %1 is missing in the request');
 
             ResponseObject.WriteTo(Response);
             exit(Response);
