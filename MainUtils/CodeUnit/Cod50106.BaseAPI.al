@@ -7,14 +7,7 @@ codeunit 50106 "Base API"
         RequestPayload: JsonToken;
         Payload: JsonToken;
     begin
-        // Request variable
-        //          {
-        //             "action": "GET_MEMBER_DETAILS",
-        //             "payload": {
-        //   "page": 1,
-        //   "page_size": 10
-        // }
-        //         }
+
         RequestParser.ReadFrom(Request);
         RequestParser.SelectToken('$.action', RequestAction);
         RequestParser.SelectToken('$.payload', RequestPayload);
@@ -44,35 +37,6 @@ codeunit 50106 "Base API"
         ResponseData: JsonObject;
         Response: Text;
     begin
-        // Payload
-        //
-        // {
-        //     "api_request_id": "df3e7cf5-1e4b-41ef-a22f-e755be665432",
-        //     "identifier_type": "MSISDN",
-        //     "identifier": "254712345678",
-        //     "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
-        // }
-
-        // Process payload here...
-
-        // SUCCESS Response
-        //
-        // {
-        //     "status": "SUCCESS",
-        //     "status_description": "Member Details Fetched Successfully",
-        //     "data": {
-        //         "name": "Carlton Moseti",
-        //         "address": "Westlands Nairobi"
-        //     }
-        // }
-
-        // ERROR Response
-        // 
-        // {
-        //     "status": "ERROR",
-        //     "status_description": "Error message...",
-        //     "errors": []
-        // }
 
         ResponseData.Add('name', 'Carlton Moseti');
         ResponseData.Add('address', 'Westlands Nairobi');
