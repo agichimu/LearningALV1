@@ -1,12 +1,12 @@
 {
-       "action": "Insert_User",
-       "payload": {
-    "first_name": "Tommy",
-    "second_name": "Walker",
-    "surname": "Lee",
-    "phone_no" : "0226143098",
-    "email_id": "tommy.lee@gmail.com",
-    "gender": "maLe",
-    "date_of_birth": "2001-04-19"
-       }
+   "action": "INSERT_USER",
+   "payload": {
+"first_name": "Tommy",
+"second_name": "Walker",
+"surname": "Lee",
+"phone_no" : "0226143098",
+"email_id": "tommy.lee@gmail.com",
+"gender": "maLe",
+"date_of_birth": "2001-04-19"
+   }
 }

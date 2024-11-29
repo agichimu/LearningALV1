@@ -8,47 +8,26 @@ codeunit 50106 "Base API"
         Payload: JsonToken;
     begin
 
-        RequestParser.ReadFrom(Request);
+        RequestParser.ReadFrom(Request);  // conversion from text to JsonObject
         RequestParser.SelectToken('$.action', RequestAction);
         RequestParser.SelectToken('$.payload', RequestPayload);
 
         // API actions here
         case RequestAction.AsValue().AsText() of
-            'GET_MEMBER_DETAILS':
-                exit(GetMemberDetails(RequestPayload.AsObject));
+
             'GET_USERS':
                 exit(GetUsers(RequestPayload.AsObject));
-            'Get_Specific_User':
+            'GET_SPECIFIC_USER':
                 exit(GetSpecificUser(RequestPayload.AsObject));
-            'Update_Specific_User':
+            'UPDATE_SPECIFIC_USER':
                 exit(UpdateSpecificUser(RequestPayload.AsObject));
-            'Delete_User':
+            'DELETE_USER':
                 exit(DeleteUser(RequestPayload.AsObject));
-            'Insert_User':
+            'INSERT_USER':
                 exit(InsertUser(RequestPayload.AsObject));
             else
                 exit(UnsupportedAction(RequestAction.AsValue.AsText))
         end;
-    end;
-
-    local procedure GetMemberDetails(Payload: JsonObject): Text
-    var
-        ResponseObject: JsonObject;
-        ResponseData: JsonObject;
-        Response: Text;
-    begin
-
-        ResponseData.Add('name', 'Carlton Moseti');
-        ResponseData.Add('address', 'Westlands Nairobi');
-
-        ResponseObject.Add('status', 'SUCCESS');
-        ResponseObject.Add('status_description', 'Member Details Fetched Successfully');
-        ResponseObject.Add('data', ResponseData);
-        AddDateTimeToResponse(ResponseObject);
-
-        ResponseObject.WriteTo(Response);
-
-        exit(Response);
     end;
 
     local procedure GetUsers(Payload: JsonObject): Text
@@ -57,30 +36,41 @@ codeunit 50106 "Base API"
         page: JsonToken;
         page_size: JsonToken;
 
-        Offset: Integer;
+        Offset, TotalFoundRecords : Integer;
         Counter: Integer;
 
         Users: Record Users;
 
-        ResponseObject: JsonObject;
+        ResponseObject, Datum : JsonObject;
         Data: JsonArray;
-        Datum: JsonObject;
         Response: Text;
     begin
         // Process payload here...
         if not Payload.SelectToken('page', page) then begin
+
             ResponseObject.Add('status', 'ERROR');
-            ResponseObject.Add('description', 'Page number value is missing in the request');
+            ResponseObject.Add('status_description', 'Page number value is missing in the request');
             ResponseObject.Add('data', Data);
             AddDateTimeToResponse(ResponseObject);
-            ResponseObject.WriteTo(Response);
+            ResponseObject.WriteTo(Response); //convert from jsonobject to text
 
-            exit(Response);
+            exit(Response);  // returns the response in Text 
+        end;
+
+        if (page.AsValue.AsInteger < 1) then begin
+
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('status_description', 'Page number must be greater than 1');
+            ResponseObject.Add('data', Data);
+            AddDateTimeToResponse(ResponseObject);
+            ResponseObject.WriteTo(Response); //convert from jsonobject to text
+
+            exit(Response);  // returns the response in Text 
         end;
 
         if not Payload.SelectToken('page_size', page_size) then begin
             ResponseObject.Add('status', 'ERROR');
-            ResponseObject.Add('description', 'Page size value is missing in the request');
+            ResponseObject.Add('status_description', 'Page size value is missing in the request');
             ResponseObject.Add('data', Data);
             AddDateTimeToResponse(ResponseObject);
 
@@ -91,7 +81,9 @@ codeunit 50106 "Base API"
 
         // Pagination
         Users.Reset;
+
         if Users.FindSet then begin
+            TotalFoundRecords := Users.Count;
             Offset := (page.AsValue.AsInteger - 1) * page_size.AsValue.AsInteger();
             Users.Next(Offset);
             Counter := 0;
@@ -108,17 +100,29 @@ codeunit 50106 "Base API"
                 Datum.Add('date_of_birth', Users."DOB");
                 Datum.Add('status', Format(Users.status));
                 Datum.Add('created_at', Users."createdAt");
-                Datum.Add('created_by', Users."createdBy");
+                Datum.Add('created_by', Format(Users."createdBy"));
                 Datum.Add('modified_at', Users."modifiedAt");
                 Datum.Add('modified_by', Users."modifiedBy");
 
                 Data.Add(Datum);
+
+
                 Counter += 1;
             end until (Users.Next = 0) or (Counter = page_size.AsValue.AsInteger);
+
+            ResponseObject.Add('status', 'SUCCESS');
+            ResponseObject.Add('status_description', 'Request is successful');
+            ResponseObject.Add('data', Data);
+
+            ResponseObject.Add('page', page.AsValue().AsInteger());
+            ResponseObject.Add('page_size', page_size.AsValue().AsInteger());
+            ResponseObject.Add('total_records', TotalFoundRecords);
+        end else begin
+            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('status_description', 'Users NOT Fetched: ');
         end;
-        ResponseObject.Add('status', 'SUCCESS');
-        ResponseObject.Add('description', 'Request is successful');
-        ResponseObject.Add('data', Data);
+
+
         // AddDateTimeToResponse(ResponseObject);
 
         ResponseObject.WriteTo(Response);
@@ -147,8 +151,10 @@ codeunit 50106 "Base API"
 
         // Get member_id from the request and store it in member_id_filter
         if not Payload.Get('member_id', member_id_filter) then begin
-            ResponseObject.Add('status', 'Error');
+            ResponseObject.Add('request_status', 'Error');
             ResponseObject.Add('status_description', 'member id is missing in the request');
+            ResponseObject.Add('response_payload', Data);
+
             AddDateTimeToResponse(ResponseObject);
 
             ResponseObject.WriteTo(Response);
@@ -185,13 +191,13 @@ codeunit 50106 "Base API"
 
             // until Users.Next = 0;
 
-            ResponseObject.Add('status', 'SUCCESS');
+            ResponseObject.Add('request_status', 'SUCCESS');
             ResponseObject.Add('status_description', 'User has been fetched successfully');
-            ResponseObject.Add('data', Datum);
+            ResponseObject.Add('response_payload', Datum);
             AddDateTimeToResponse(ResponseObject);
 
         end else begin
-            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('request_status', 'ERROR');
             //Replaces %1 field in a string with the values you provide as optional parameters.
             ResponseObject.Add('status_description', STRSUBSTNO('member id %1 does not exist', member_id));
             AddDateTimeToResponse(ResponseObject);
@@ -212,6 +218,7 @@ codeunit 50106 "Base API"
 
         ResponseObject: JsonObject;
         Response: Text;
+        Data: JsonArray;
 
         member_id: Integer;
         first_name: Text[50];
@@ -225,7 +232,7 @@ codeunit 50106 "Base API"
 
         // Get member_id from the request
         if not Payload.Get('member_id', varA) then begin
-            ResponseObject.Add('status', 'Error');
+            ResponseObject.Add('request_status', 'Error');
             ResponseObject.Add('status_description', 'Member ID is missing in the request');
             AddDateTimeToResponse(ResponseObject);
             ResponseObject.WriteTo(Response);
@@ -278,13 +285,13 @@ codeunit 50106 "Base API"
 
             Users.Modify(true);
 
-            ResponseObject.Add('status', 'SUCCESS');
+            ResponseObject.Add('request_status', 'SUCCESS');
             ResponseObject.Add('status_description', STRSUBSTNO('User %1 has been updated successfully', member_id));
             AddDateTimeToResponse(ResponseObject);
             ResponseObject.WriteTo(Response);
         end else begin
             // User not found
-            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('request_status', 'ERROR');
             ResponseObject.Add('status_description', STRSUBSTNO('User ID %1 does not exist', member_id));
             AddDateTimeToResponse(ResponseObject);
 
@@ -313,7 +320,7 @@ codeunit 50106 "Base API"
 
         // Get member_id from the request and store it in member_id_filter
         if not Payload.Get('member_id', member_id_filter) then begin
-            ResponseObject.Add('status', 'Error');
+            ResponseObject.Add('request_status', 'Error');
             ResponseObject.Add('status_description', 'member id %1 is missing in the request');
             AddDateTimeToResponse(ResponseObject);
             ResponseObject.WriteTo(Response);
@@ -331,12 +338,12 @@ codeunit 50106 "Base API"
 
             Users.Delete(true);  //Deletes a record in a table.
 
-            ResponseObject.Add('status', 'SUCCESS');
+            ResponseObject.Add('request_status', 'SUCCESS');
             ResponseObject.Add('status_description', STRSUBSTNO('User with member id %1 has been deleted successfully', member_id));
             AddDateTimeToResponse(ResponseObject);
 
         end else begin
-            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('request_status', 'ERROR');
             ResponseObject.Add('status_description', STRSUBSTNO('User with member id %1 does not exist', member_id));
             AddDateTimeToResponse(ResponseObject);
         end;
@@ -356,12 +363,8 @@ codeunit 50106 "Base API"
         ResponseObject: JsonObject;  //construct the response as a JSON object.
         Response: Text;
 
-        FirstName: Text[50];
-        SecondName: Text[50];
-        Surname: Text[50];
+        FirstName, SecondName, Surname, EmailID, Gender : Text[50];
         PhoneNo: Code[20];
-        EmailID: Text[50];
-        Gender: Text;
         DOB: Date;
     begin
 
@@ -369,8 +372,9 @@ codeunit 50106 "Base API"
 
         if not Payload.Get('first_name', varA) then begin
             // Add status and data to the response JSON object
-            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('request_status', 'ERROR');
             ResponseObject.Add('status_description', 'First Name is missing');
+
             AddDateTimeToResponse(ResponseObject);
 
             // Convert JSON response object to text
@@ -382,8 +386,9 @@ codeunit 50106 "Base API"
         FirstName := varA.AsValue().AsText();
 
         if not Payload.Get('second_name', varA) then begin
-            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('request_status', 'ERROR');
             ResponseObject.Add('status_description', 'Second Name is Missing');
+
             AddDateTimeToResponse(ResponseObject);
 
             ResponseObject.WriteTo(Response);
@@ -395,8 +400,9 @@ codeunit 50106 "Base API"
 
 
         if not Payload.Get('surname', varA) then begin
-            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('request_status', 'ERROR');
             ResponseObject.Add('status_description', 'surname is Missing');
+
             AddDateTimeToResponse(ResponseObject);
 
             ResponseObject.WriteTo(Response);
@@ -408,8 +414,9 @@ codeunit 50106 "Base API"
 
 
         if not Payload.Get('phone_no', varA) then begin
-            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('request_status', 'ERROR');
             ResponseObject.Add('status_description', 'Phone Number is missing');
+
             AddDateTimeToResponse(ResponseObject);
 
             ResponseObject.WriteTo(Response);
@@ -421,8 +428,9 @@ codeunit 50106 "Base API"
 
 
         if not Payload.Get('email_id', varA) then begin
-            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('request_status', 'ERROR');
             ResponseObject.Add('status_description', 'Email is missing');
+
             AddDateTimeToResponse(ResponseObject);
 
             ResponseObject.WriteTo(Response);
@@ -434,8 +442,9 @@ codeunit 50106 "Base API"
 
 
         if not Payload.Get('gender', varA) then begin
-            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('request_status', 'ERROR');
             ResponseObject.Add('status_description', 'Gender is missing');
+
             AddDateTimeToResponse(ResponseObject);
 
             ResponseObject.WriteTo(Response);
@@ -446,8 +455,9 @@ codeunit 50106 "Base API"
 
 
         if not Payload.Get('date_of_birth', varA) then begin
-            ResponseObject.Add('status', 'ERROR');
+            ResponseObject.Add('request_status', 'ERROR');
             ResponseObject.Add('status_description', 'Date of Birth is missing');
+
             AddDateTimeToResponse(ResponseObject);
 
             ResponseObject.WriteTo(Response);
@@ -478,7 +488,7 @@ codeunit 50106 "Base API"
             'female':
                 Users.gender := Users.gender::Female;
             else begin
-                ResponseObject.Add('status', 'ERROR');
+                ResponseObject.Add('request_status', 'ERROR');
                 ResponseObject.Add('status_description', 'Invalid gender specified');
                 AddDateTimeToResponse(ResponseObject);
 
@@ -492,8 +502,9 @@ codeunit 50106 "Base API"
         Users.Insert(true);
 
 
-        ResponseObject.Add('status', 'SUCCESS');
+        ResponseObject.Add('request_status', 'SUCCESS');
         ResponseObject.Add('status_description', 'User has been inserted successfully');
+
         AddDateTimeToResponse(ResponseObject);
 
         ResponseObject.WriteTo(Response);
@@ -519,6 +530,22 @@ codeunit 50106 "Base API"
         ResponseObject.WriteTo(Response);
 
         exit(Response);
+    end;
+
+    procedure ConvertDate(DateString: Text): Text
+    var
+        Day, Month, Year : Text;
+        DateParts: List of [Text];
+    begin
+        DateParts := DateString.Split('/');
+        if DateParts.Count = 3 then begin
+            Day := DateParts.Get(1);
+            Month := DateParts.Get(2);
+            Year := DateParts.Get(3);
+
+            exit(Year + '-' + Month + '-' + Day);
+        end else
+            Error('Invalid date format: %1', DateString);
     end;
 
     local procedure AddDateTimeToResponse(var ResponseObject: JsonObject)
