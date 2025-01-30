@@ -7,7 +7,6 @@ codeunit 50106 "Base API"
         RequestPayload: JsonToken;
         Payload: JsonToken;
     begin
-
         RequestParser.ReadFrom(Request);  // conversion from text to JsonObject
         RequestParser.SelectToken('$.action', RequestAction);
         RequestParser.SelectToken('$.payload', RequestPayload);
@@ -366,6 +365,7 @@ codeunit 50106 "Base API"
         FirstName, SecondName, Surname, EmailID, Gender : Text[50];
         PhoneNo: Code[20];
         DOB: Date;
+        Data: JsonArray;
     begin
 
         //checks if first name exist in the request if true value is stored in var first name
@@ -504,6 +504,8 @@ codeunit 50106 "Base API"
 
         ResponseObject.Add('request_status', 'SUCCESS');
         ResponseObject.Add('status_description', 'User has been inserted successfully');
+        ResponseObject.Add('data', Data);
+
 
         AddDateTimeToResponse(ResponseObject);
 

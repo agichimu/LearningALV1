@@ -212,4 +212,35 @@ table 50100 Users
         else
             exit(false);
     end;
+
+    procedure FormatPhoneNo(Telephone: Text[50]): Text[50]
+    begin
+        Telephone := DelChr(Telephone, '=', ' ');
+
+        if StrLen(Telephone) = 12 then begin
+            exit(Telephone);
+        end;
+        if StrLen(Telephone) = 13 then begin
+            Telephone := CopyStr(Telephone, 2, 12);
+            exit(Telephone);
+        end;
+        if StrLen(Telephone) = 10 then begin
+            if CopyStr(Telephone, 1, 1) = '0' then
+                Telephone := '254' + CopyStr(Telephone, 2, 9);
+            exit(Telephone);
+        end;
+
+        if StrLen(Telephone) = 9 then begin
+            if CopyStr(Telephone, 1, 1) = '7' then
+                Telephone := '254' + Telephone;
+            exit(Telephone);
+        end;
+        if StrLen(Telephone) > 13 then begin
+            Telephone := CopyStr(Telephone, StrLen(Telephone) - 9, 10);
+            if CopyStr(Telephone, 1, 1) = '0' then
+                Telephone := '254' + CopyStr(Telephone, 2, 9);
+            exit(Telephone);
+        end;
+    end;
+
 }

@@ -127,7 +127,7 @@ report 50104 "iconmembers report"
     end;
 
     var
-    
+
     // Date2DMY Function:
     // The Date2DMY function extracts the day, month, or year from a given date. It takes two arguments:
     // 1 for day,
